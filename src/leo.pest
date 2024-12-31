@@ -1,0 +1,46 @@
+// Grammar rules for a small subset of the Leo programming language.
+// Example:
+// function main() {
+//     let a = 1u8 + 1u8;
+// }
+
+// program
+program = _{ SOI ~ function_header ~ "\n"* ~ statement+ ~ "}" ~ "\n"* ~ EOI }
+
+
+// functions
+function_header = { "function" ~ ident ~ "(" ~ input* ~ ")" ~ "{" }
+
+input = { ident ~ ":" ~ value_type }
+
+
+// statements
+statement = { assign ~ ";" ~ "\n"+ }
+
+assign = { "let" ~ ident ~ "=" ~ expression }
+
+
+// expressions
+expression = { binary | value }
+
+binary = { value ~ operator ~ expression }
+
+// operators
+operator = {
+    "+" | "-" | "*"  | "/"
+}
+
+
+// values
+value = _{  integer | ident | "(" ~ expression ~ ")" }
+
+value_type = { "u8" }
+
+integer = @{ "_"? ~ ASCII_DIGIT+ ~ value_type }
+
+ident = @{ ASCII_ALPHA ~ (ASCII_ALPHANUMERIC | "_")* }
+
+
+// misc
+WHITESPACE = _{ " " | "\t" }
+COMMENT = _{ "NB." ~ (!"\n" ~ ANY)* }
